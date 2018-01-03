@@ -9,12 +9,13 @@ def deploy():
     source_folder_name = 'src'
     source_folder = f'{site_folder}/{source_folder_name}'
     project_name = 'cms'
+    virtualenv = "/home/nonzer0/.virtualenvs/wagtail"
     
     #_create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
-    _update_virtualenv(source_folder, "/home/nonzer0/.virtualenvs/wagtail")
-    _update_static_files(source_folder)
-    _update_database(source_folder)
+    _update_virtualenv(source_folder, virtualenv)
+    _update_static_files(source_folder, virtualenv)
+    _update_database(source_folder, virtualenv)
     _link_wsgi(site_folder, source_folder_name)
     
 def _create_directory_structure_if_necessary(site_folder):
@@ -51,16 +52,16 @@ def _update_virtualenv(source_folder, virtualenv):
         run(f'python3 -m venv {virtualenv}')
     run(f'{virtualenv}/bin/pip install -r {source_folder}/requirements.txt')
 
-def _update_static_files(source_folder):
+def _update_static_files(source_folder, virtualenv):
     run(
         f'cd {source_folder}'
-        ' && ../virtualenv/bin/python manage.py collectstatic --noinput'
+        f' && {virtualenv}/bin/python manage.py collectstatic --noinput'
     )
     
-def _update_database(source_folder):
+def _update_database(source_folder, virtualenv):
     run(
         f'cd {source_folder}'
-        ' && ../virtualenv/bin/python manage.py migrate --noinput'
+        f' && {virtualenv}/bin/python manage.py migrate --noinput'
     )
     
 def _link_wsgi(site_folder, source_folder_name):
@@ -69,4 +70,5 @@ def _link_wsgi(site_folder, source_folder_name):
         f'cd {site_folder}'
         f' && ln -sf {relative_wsgi_file_path} passenger_wsgi.py'
     )
+    run(f'mkdir -p {site_folder}/tmp')
     run(f'touch {site_folder}/tmp/restart.txt')

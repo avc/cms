@@ -1,6 +1,6 @@
 import sys, os
 virtualenv_path = "/home/nonzer0/.virtualenvs/wagtail"
-PROJECT_SETTINGS = "production.settings"
+PROJECT_SETTINGS = "cms.settings.production"
 PROJECT_DIR = "src"
 
 INTERP = virtualenv_path + "/bin/python"

@@ -12,7 +12,7 @@ def deploy():
     
     #_create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
-    _update_virtualenv("/home/nonzer0/.virtualenvs/wagtail")
+    _update_virtualenv(source_folder, "/home/nonzer0/.virtualenvs/wagtail")
     _update_static_files(source_folder)
     _update_database(source_folder)
     _link_wsgi(site_folder, source_folder_name)
@@ -46,7 +46,7 @@ def _update_settings(source_folder, host, project_name):
         secret_key = ''.join(random.SystemRandom().choice(chars) for _ in range(50))
         append(secret_key_file, f'SECRET_KEY = "{secret_key}"')
     
-def _update_virtualenv(virtualenv):
+def _update_virtualenv(source_folder, virtualenv):
     if not exists(f'{virtualenv}/bin/pip'):
         run(f'python3 -m venv {virtualenv}')
     run(f'{virtualenv}/bin/pip install -r {source_folder}/requirements.txt')

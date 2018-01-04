@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-qaindexpage{% endblock %}
+
+{% block content %}
+    <h1>{{ page.title }}</h1>
+
+    <div class="intro">{{ page.intro|richtext }}</div>
+
+    <ul>
+    {% for post in qa_pages %}
+        <li><a href="{% pageurl post %}">{{ post.title }}</a></li>
+    {% endfor %}
+    </ul>
+
+{% endblock %}

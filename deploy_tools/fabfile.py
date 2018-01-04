@@ -14,6 +14,7 @@ def deploy():
     #_create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
     _update_virtualenv(source_folder, virtualenv)
+    _update_secret_key(source_folder, env.host, project_name)
     _update_static_files(source_folder, virtualenv)
     _update_database(source_folder, virtualenv)
     _link_wsgi(site_folder, source_folder_name)
@@ -31,17 +32,17 @@ def _get_latest_source(source_folder):
     run(f'cd {source_folder} && git reset --hard {current_commit}')
     
 def _update_settings(source_folder, host, project_name):
-    # Unused because wagtail uses multiple settings files.
     # Debug false
-    settings_file = f'{source_folder}/{project_name}/settings.py'
+    settings_file = f'{source_folder}/{project_name}/settings/production.py'
     sed(settings_file, 'DEBUG = True', 'DEBUG = False')
     sed(settings_file, 
         'ALLOWED_HOSTS = .+$', 
         f'ALLOWED_HOSTS = ["{host}"]'
     )
 
+def _update_secret_key(source_folder, host, project_name):
     # Secret key
-    secret_key_file = f'{source_folder}/{project_name}/secret_key.py'
+    secret_key_file = f'{source_folder}/{project_name}/settings/secret_key.py'
     if not exists(secret_key_file):
         chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
         secret_key = ''.join(random.SystemRandom().choice(chars) for _ in range(50))

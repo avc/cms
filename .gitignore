@@ -1,6 +1,9 @@
 # Default Django Database
 db.sqlite3
 
+# Secret key
+settings/secret_key.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

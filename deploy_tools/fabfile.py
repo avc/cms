@@ -1,23 +1,33 @@
 from fabric.contrib.files import append, exists, sed
-from fabric.api import env, local, run
+from fabric.api import env, local, run, put
 import random
+
+# Settings
 
 REPO_URL = 'https://github.com/avc/cms.git'
 
-def deploy():
-    site_folder = f'/home/{env.user}/{env.host}'
-    source_folder_name = 'src'
-    source_folder = f'{site_folder}/{source_folder_name}'
-    project_name = 'cms'
-    virtualenv = "/home/nonzer0/.virtualenvs/wagtail"
+def site_folder():
+    return f'/home/{env.user}/{env.host}'
+
+source_folder_name = 'src'
+
+def source_folder():
+    return f'{site_folder()}/{source_folder_name}'
     
+project_name = 'cms'
+virtualenv = "/home/nonzer0/.virtualenvs/wagtail"
+
+
+# Tasks
+
+def deploy():
     #_create_directory_structure_if_necessary(site_folder)
-    _get_latest_source(source_folder)
-    _update_virtualenv(source_folder, virtualenv)
-    _update_settings(source_folder, env.host, project_name)
-    _update_static_files(source_folder, virtualenv)
-    _update_database(source_folder, virtualenv)
-    _link_wsgi(site_folder, source_folder_name)
+    _get_latest_source(source_folder())
+    _update_virtualenv(source_folder(), virtualenv)
+    _update_settings(source_folder(), env.host, project_name)
+    _update_static_files(source_folder(), virtualenv)
+    _update_database(source_folder(), virtualenv)
+    _link_wsgi(site_folder(), source_folder_name)
     
 def _create_directory_structure_if_necessary(site_folder):
     for subfolder in ('db', 'public/static', 'src'):
@@ -70,3 +80,6 @@ def _link_wsgi(site_folder, source_folder_name):
     )
     run(f'mkdir -p {site_folder}/tmp')
     run(f'touch {site_folder}/tmp/restart.txt')
+
+def upload_database():
+    put('../db.sqlite3', source_folder() + '/')
